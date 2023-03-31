@@ -1,0 +1,58 @@
+Anycam / video-tek dt-43 doorstation reverse engineering
+
+"2-wire" bus: seems to be stolen ip from tcs gmbh (need to test)
+
+U?: display controller, cvbs in from (bus->)fm->cvbs converter daughterboard, spi/i2c from stm8, parallel bus to lcd (confidential datasheet on baidu)
+U?: spi flash containing background images in unknown format and 8051 code
+U?: stm8 with swim port handling bus and interface (code running on it contains some strings, debug port for firmware customisation?)
+U?: i2c eeprom containing menus in various languages
+U?: ??? touch/led controller
+U?: cheapo ic containing cheapo doorbell sounds
+
+
+db1: bus->cvbs
+db2: bus <-> loudspeaker / microphone
+db3: for communication between bus splitter and stm8?
+
+-----------------------------------------------------------------------------
+spi eeprom:
+0x00 - 0x7f: identifier?
+
+
+Language:
+
+01 00 00 30 30 30 30 5F [language] - Header for Language (e.g. first one at 0x80)
++ 0x20 - 0x7F
+90 C4 00 00 ... - 4 Byte pointers to "menu", change endianness
+
+todo offset
+80 20 00 00 - Pointers to strings like "Wiederherstellen" "Bitte warten..." 
+
+Size: 0x200
+
+------------------------------------------------------------------------------
+
+Unk: (maybe settings or colors? but it doesn't make sense..., have to check but no menu for sure)
+First address
+
+------------------------------------------------------------------------------
+Menu:
+todo - ??? Some values change "text" size (e.g. Next "string" gets shifted by x and so on because of the fixed size)
+
+Address to ponter + ??? -> Start of first text
+
+36 bytes of data -> Bitmap b/w 12x18, 2nd nibble of 2nd byte gets ignored
+length per string = ? - Todo: check if they are all the same (at least for some menus it seems so)
+
+
+mainmenu 
+55644
+17
+85
+
+ds 01...
+11102
+7
+28
+
+klingelton 99280
